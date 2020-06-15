@@ -1,4 +1,8 @@
+#include <unrar.h>
 #include <string.h>
+#include <stdio.h>
+
+#define LOG printf
 
 void unrar_test(const char* rarFilePath, const char* dstPath)
 {
@@ -24,7 +28,7 @@ void unrar_test(const char* rarFilePath, const char* dstPath)
       
     while (RARReadHeaderEx(hArcData, &rarHeaderData) == ERAR_SUCCESS)   
     {   
-        LOG("Extracting '%s' (%d) ...", rarHeaderData.FileName, rarHeaderData.UnpSize + (((uint64_t)rarHeaderData.UnpSizeHigh) << 32));   
+        LOG("Extracting '%s' (%ld) ...", rarHeaderData.FileName, rarHeaderData.UnpSize + (((uint64_t)rarHeaderData.UnpSizeHigh) << 32));   
     
         if (RARProcessFile(hArcData, RAR_EXTRACT, dstPath, NULL) != ERAR_SUCCESS)   
         {   
@@ -36,3 +40,10 @@ void unrar_test(const char* rarFilePath, const char* dstPath)
     RARCloseArchive(hArcData);   
 }
 
+
+int main(void)
+{
+    unrar_test("/dev_hdd0/tmp/archive.rar", "/dev_hdd0/tmp/");
+    
+    return 0;
+}
