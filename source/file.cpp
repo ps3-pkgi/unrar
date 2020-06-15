@@ -651,7 +651,7 @@ void File::SetCloseFileTimeByName(const wchar *Name,RarTime *ftm,RarTime *fta)
     times[1].tv_nsec=setm ? long(ftm->GetUnixNS()%1000000000) : UTIME_NOW;
     utimensat(AT_FDCWD,NameA,times,0);
 #else
-    utimbuf ut;
+    sysFSUtimbuf ut;
     if (setm)
       ut.modtime=ftm->GetUnix();
     else
@@ -660,7 +660,7 @@ void File::SetCloseFileTimeByName(const wchar *Name,RarTime *ftm,RarTime *fta)
       ut.actime=fta->GetUnix();
     else
       ut.actime=ut.modtime; // Need to set something, cannot left it 0.
-    utime(NameA,&ut);
+    sysLv2FsUtime(NameA,&ut);
 #endif
   }
 #endif

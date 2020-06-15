@@ -1,173 +1,107 @@
-#
-# Makefile for UNIX - unrar
+#---------------------------------------------------------------------------------
+# Clear the implicit built in rules
+#---------------------------------------------------------------------------------
+.SUFFIXES:
+#---------------------------------------------------------------------------------
 
-# Linux using GCC
-CXX=c++
-CXXFLAGS=-O2 -Wno-logical-op-parentheses -Wno-switch -Wno-dangling-else
-LIBFLAGS=-fPIC
-DEFINES=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DRAR_SMP
-STRIP=strip
-AR=ar
-LDFLAGS=-pthread
-DESTDIR=/usr
+ifeq ($(strip $(PSL1GHT)),)
+$(error "Please set PSL1GHT in your environment. export PSL1GHT=<path>")
+endif
 
-# Linux using LCC
-#CXX=lcc
-#CXXFLAGS=-O2
-#DEFINES=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
-#STRIP=strip
-#AR=ar
-#DESTDIR=/usr
+include	$(PSL1GHT)/ppu_rules
 
-# CYGWIN using GCC
-#CXX=c++
-#CXXFLAGS=-O2
-#LIBFLAGS=
-#DEFINES=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DRAR_SMP
-#STRIP=strip
-#AR=ar
-#LDFLAGS=-pthread
-#DESTDIR=/usr
 
-# HP UX using aCC
-#CXX=aCC
-#CXXFLAGS=-AA +O2 +Onolimit
-#DEFINES=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
-#STRIP=strip
-#AR=ar
-#DESTDIR=/usr
 
-# IRIX using GCC
-#CXX=g++
-#CXXFLAGS=-O2 
-#DEFINES=-DBIG_ENDIAN -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_BSD_COMPAT -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED=1
-#STRIP=strip
-#AR=ar
-#DESTDIR=/usr
+#---------------------------------------------------------------------------------
+ifeq ($(strip $(PLATFORM)),)
+#---------------------------------------------------------------------------------
+export BASEDIR		:= $(CURDIR)
+export DEPS			:= $(BASEDIR)/deps
+export LIBS			:=	$(BASEDIR)/lib
 
-# IRIX using MIPSPro (experimental)
-#CXX=CC
-#CXXFLAGS=-O2 -mips3 -woff 1234,1156,3284 -LANG:std
-#DEFINES=-DBIG_ENDIAN -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_BSD_COMPAT -Dint64=int64_t
-#STRIP=strip
-#AR=ar
-#DESTDIR=/usr
+#---------------------------------------------------------------------------------
+else
+#---------------------------------------------------------------------------------
 
-# AIX using xlC (IBM VisualAge C++ 5.0)
-#CXX=xlC
-#CXXFLAGS=-O -qinline -qro -qroconst -qmaxmem=16384 -qcpluscmt
-#DEFINES=-D_LARGE_FILES -D_LARGE_FILE_API
-#LIBS=-lbsd
-#STRIP=strip
-#AR=ar
-#DESTDIR=/usr
+export LIBDIR		:= $(LIBS)/$(PLATFORM)
+export DEPSDIR		:=	$(DEPS)/$(PLATFORM)
 
-# Solaris using CC
-#CXX=CC
-#CXXFLAGS=-fast -erroff=wvarhidemem
-#DEFINES=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
-#STRIP=strip
-#AR=ar
-#DESTDIR=/usr
+#---------------------------------------------------------------------------------
+endif
+#---------------------------------------------------------------------------------
 
-# Solaris using GCC (optimized for UltraSPARC 1 CPU)
-#CXX=g++
-#CXXFLAGS=-O3 -mcpu=v9 -mtune=ultrasparc -m32
-#DEFINES=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
-#STRIP=/usr/ccs/bin/strip
-#AR=/usr/ccs/bin/ar
-#DESTDIR=/usr
+TARGET		:=	libunrar
+BUILD		:=	build
+SOURCE		:=	source
+INCLUDE		:=	include
+DATA		:=	data
+LIBS		:=	 
 
-# Tru64 5.1B using GCC3
-#CXX=g++
-#CXXFLAGS=-O2 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_XOPEN_SOURCE=500
-#STRIP=strip
-#AR=ar
-#LDFLAGS=-rpath /usr/local/gcc/lib
-#DESTDIR=/usr
+MACHDEP		:= -DBIGENDIAN 
+CFLAGS		+= -O2 -Wall -mcpu=cell $(MACHDEP) -fno-strict-aliasing $(INCLUDES)
+CXXFLAGS	+= -O2 -Wno-logical-op-parentheses -Wno-switch -Wno-dangling-else -mcpu=cell $(MACHDEP) -fno-strict-aliasing $(INCLUDES)
 
-# Tru64 5.1B using DEC C++
-#CXX=cxx
-#CXXFLAGS=-O4 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -Dint64=long
-#STRIP=strip
-#AR=ar
-#LDFLAGS=
-#DESTDIR=/usr
+CXXFLAGS	+= -DBIG_ENDIAN -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DRARDLL
 
-# QNX 6.x using GCC
-#CXX=g++
-#CXXFLAGS=-O2 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -fexceptions
-#STRIP=strip
-#AR=ar
-#LDFLAGS=-fexceptions
-#DESTDIR=/usr
+LD			:=	ppu-ld
 
-# Cross-compile
-# Linux using arm-linux-g++
-#CXX=arm-linux-g++
-#CXXFLAGS=-O2
-#DEFINES=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
-#STRIP=arm-linux-strip
-#AR=arm-linux-ar
-#LDFLAGS=-static
-#DESTDIR=/usr
+ifneq ($(BUILD),$(notdir $(CURDIR)))
 
-##########################
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export VPATH	:=	$(foreach dir,$(SOURCE),$(CURDIR)/$(dir)) \
+					$(foreach dir,$(DATA),$(CURDIR)/$(dir))
+export BUILDDIR	:=	$(CURDIR)/$(BUILD)
+export DEPSDIR	:=	$(BUILDDIR)
 
-COMPILE=$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(DEFINES)
-LINK=$(CXX)
+CFILES		:= $(foreach dir,$(SOURCE),$(notdir $(wildcard $(dir)/*.c)))
+CXXFILES	:= rar.cpp strlist.cpp strfn.cpp pathfn.cpp smallfn.cpp global.cpp file.cpp filefn.cpp filcreat.cpp \
+	archive.cpp arcread.cpp unicode.cpp system.cpp isnt.cpp crypt.cpp crc.cpp rawread.cpp encname.cpp \
+	resource.cpp match.cpp timefn.cpp rdwrfn.cpp consio.cpp options.cpp errhnd.cpp rarvm.cpp secpassword.cpp \
+	rijndael.cpp getbits.cpp sha1.cpp sha256.cpp blake2s.cpp hash.cpp extinfo.cpp extract.cpp volume.cpp \
+	list.cpp find.cpp unpack.cpp headers.cpp threadpool.cpp rs16.cpp cmddata.cpp ui.cpp \
+	filestr.cpp scantree.cpp dll.cpp qopen.cpp
+SFILES		:= $(foreach dir,$(SOURCE),$(notdir $(wildcard $(dir)/*.S)))
+BINFILES	:= $(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.bin)))
+VCGFILES	:= $(foreach dir,$(SOURCE),$(notdir $(wildcard $(dir)/*.vcg)))
+VSAFILES	:= $(foreach dir,$(SOURCE),$(notdir $(wildcard $(dir)/*.vsa)))
 
-WHAT=UNRAR
 
-UNRAR_OBJ=filestr.o recvol.o rs.o scantree.o qopen.o
-LIB_OBJ=filestr.o scantree.o dll.o qopen.o
+export OFILES	:=	$(CFILES:.c=.o) \
+					$(CXXFILES:.cpp=.o) \
+					$(SFILES:.S=.o) \
+					$(BINFILES:.bin=.bin.o) \
+					$(VCGFILES:.vcg=.vcg.o) \
+					$(VSAFILES:.vsa=.vsa.o)
 
-OBJECTS=rar.o strlist.o strfn.o pathfn.o smallfn.o global.o file.o filefn.o filcreat.o \
-	archive.o arcread.o unicode.o system.o isnt.o crypt.o crc.o rawread.o encname.o \
-	resource.o match.o timefn.o rdwrfn.o consio.o options.o errhnd.o rarvm.o secpassword.o \
-	rijndael.o getbits.o sha1.o sha256.o blake2s.o hash.o extinfo.o extract.o volume.o \
-  list.o find.o unpack.o headers.o threadpool.o rs16.o cmddata.o ui.o
+export BINFILES	:=	$(BINFILES:.bin=.bin.h)
+export VCGFILES	:=	$(VCGFILES:.vcg=.vcg.h)
+export VSAFILES	:=	$(VSAFILES:.vsa=.vsa.h)
 
-.cpp.o:
-	$(COMPILE) -D$(WHAT) -c $<
+export INCLUDES	=	$(foreach dir,$(INCLUDE),-I$(CURDIR)/$(dir)) \
+					-I$(CURDIR)/$(BUILD) -I$(PSL1GHT)/ppu/include -I$(PORTLIBS)/include
 
-all:	unrar
+.PHONY: $(BUILD) install clean shader
 
-install:	install-unrar
+$(BUILD):
+	@[ -d $@ ] || mkdir -p $@
+	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
-uninstall:	uninstall-unrar
-
+install: $(BUILD)
+	@echo Copying...
+	@cp -frv include/dll.hpp $(PORTLIBS)/include/unrar.h
+	@cp -frv $(TARGET).a $(PORTLIBS)/lib
+	@echo lib installed!
 clean:
-	@rm -f *.o *.bak *~
+	@echo Clean...
+	@rm -rf $(BUILD) $(OUTPUT).elf $(OUTPUT).self $(OUTPUT).a
 
-unrar:	clean $(OBJECTS) $(UNRAR_OBJ)
-	@rm -f unrar
-	$(LINK) -o unrar $(LDFLAGS) $(OBJECTS) $(UNRAR_OBJ) $(LIBS)	
-	$(STRIP) unrar
+else
 
-sfx:	WHAT=SFX_MODULE
-sfx:	clean $(OBJECTS)
-	@rm -f default.sfx
-	$(LINK) -o default.sfx $(LDFLAGS) $(OBJECTS)
-	$(STRIP) default.sfx
+DEPENDS	:= $(OFILES:.o=.d)
 
-lib:	WHAT=RARDLL
-lib:	CXXFLAGS+=$(LIBFLAGS)
-lib:	clean $(OBJECTS) $(LIB_OBJ)
-	@rm -f libunrar.so
-	@rm -f libunrar.a
-	$(LINK) -shared -o libunrar.so $(LDFLAGS) $(OBJECTS) $(LIB_OBJ)
-	$(AR) rcs libunrar.a $(OBJECTS) $(LIB_OBJ)
+$(OUTPUT).a: $(OFILES)
+$(OFILES): $(BINFILES) $(VCGFILES) $(VSAFILES)
 
-install-unrar:
-			install -D unrar $(DESTDIR)/bin/unrar
+-include $(DEPENDS)
 
-uninstall-unrar:
-			rm -f $(DESTDIR)/bin/unrar
-
-install-lib:
-		install libunrar.so $(DESTDIR)/lib
-		install libunrar.a $(DESTDIR)/lib
-
-uninstall-lib:
-		rm -f $(DESTDIR)/lib/libunrar.so
+endif

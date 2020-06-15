@@ -2,6 +2,7 @@
 
 void ExtractUnixOwner20(Archive &Arc,const wchar *FileName)
 {
+  return;
   char NameA[NM];
   WideToChar(FileName,NameA,ASIZE(NameA));
 
@@ -49,6 +50,7 @@ void ExtractUnixOwner20(Archive &Arc,const wchar *FileName)
 
 void ExtractUnixOwner30(Archive &Arc,const wchar *FileName)
 {
+  return;
   char NameA[NM];
   WideToChar(FileName,NameA,ASIZE(NameA));
 
@@ -92,6 +94,7 @@ void ExtractUnixOwner30(Archive &Arc,const wchar *FileName)
 
 void SetUnixOwner(Archive &Arc,const wchar *FileName)
 {
+  return;
   char NameA[NM];
   WideToChar(FileName,NameA,ASIZE(NameA));
 

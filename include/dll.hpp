@@ -1,6 +1,8 @@
 #ifndef _UNRAR_DLL_
 #define _UNRAR_DLL_
 
+#include <stddef.h>
+
 #pragma pack(push, 1)
 
 #define ERAR_SUCCESS             0
@@ -38,14 +40,14 @@
 #define RAR_HASH_BLAKE2       2
 
 
-#ifdef _UNIX
+//#ifdef _UNIX
 #define CALLBACK
 #define PASCAL
 #define LONG long
 #define HANDLE void *
 #define LPARAM long
 #define UINT unsigned int
-#endif
+//#endif
 
 #define RHDF_SPLITBEFORE 0x01
 #define RHDF_SPLITAFTER  0x02

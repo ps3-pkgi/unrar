@@ -17,7 +17,7 @@
 
 #if defined(_WIN_ALL) || defined(_EMX)
 
-#define LITTLE_ENDIAN
+#define BIG_ENDIAN
 #define NM  2048
 
 #ifdef _WIN_ALL
@@ -97,9 +97,9 @@
 #include <signal.h>
 
 
-#define SAVE_LINKS
+//#define SAVE_LINKS
 
-#define ENABLE_ACCESS
+//#define ENABLE_ACCESS
 
 #define DefConfigName  L"rar.ini"
 #define DefLogName     L"rar.log"
@@ -146,7 +146,7 @@
   #include <sys/sysctl.h>
 #endif
 #ifndef SFX_MODULE
-    #include <sys/statvfs.h>
+    #include <lv2/sysfs.h>
 #endif
 #include <pwd.h>
 #include <grp.h>
@@ -167,7 +167,7 @@
 
 
 #ifdef  S_IFLNK
-#define SAVE_LINKS
+//#define SAVE_LINKS
 #endif
 
 #if defined(__linux) || defined(__FreeBSD__)
@@ -175,7 +175,7 @@
 #define USE_LUTIMES
 #endif
 
-#define ENABLE_ACCESS
+//#define ENABLE_ACCESS
 
 #define DefConfigName  L".rarrc"
 #define DefLogName     L".rarlog"
