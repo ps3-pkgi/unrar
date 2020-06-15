@@ -26,7 +26,7 @@ void unrar_test(const char* rarFilePath, const char* dstPath)
     {   
         LOG("Extracting '%s' (%d) ...", rarHeaderData.FileName, rarHeaderData.UnpSize + (((uint64_t)rarHeaderData.UnpSizeHigh) << 32));   
     
-        if (RARProcessFile(hArcData, RAR_EXTRACT, NULL, NULL) != ERAR_SUCCESS)   
+        if (RARProcessFile(hArcData, RAR_EXTRACT, dstPath, NULL) != ERAR_SUCCESS)   
         {   
             LOG("ERROR: UnRAR Extract Failed!");
             return;
