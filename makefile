@@ -37,7 +37,7 @@ INCLUDE		:=	include
 DATA		:=	data
 LIBS		:=	 
 
-MACHDEP		:= -DBIGENDIAN 
+MACHDEP		:= -DBIG_ENDIAN
 CFLAGS		+= -O2 -Wall -mcpu=cell $(MACHDEP) -fno-strict-aliasing $(INCLUDES)
 CXXFLAGS	+= -O2 -Wno-logical-op-parentheses -Wno-switch -Wno-dangling-else -mcpu=cell $(MACHDEP) -fno-strict-aliasing $(INCLUDES)
 

@@ -17,7 +17,7 @@
 
 #if defined(_WIN_ALL) || defined(_EMX)
 
-#define BIG_ENDIAN
+#define LITTLE_ENDIAN
 #define NM  2048
 
 #ifdef _WIN_ALL
@@ -99,7 +99,7 @@
 
 //#define SAVE_LINKS
 
-//#define ENABLE_ACCESS
+#define ENABLE_ACCESS
 
 #define DefConfigName  L"rar.ini"
 #define DefLogName     L"rar.log"
@@ -175,7 +175,7 @@
 #define USE_LUTIMES
 #endif
 
-//#define ENABLE_ACCESS
+#define ENABLE_ACCESS
 
 #define DefConfigName  L".rarrc"
 #define DefLogName     L".rarlog"
@@ -185,11 +185,11 @@
 #define CPATHDIVIDER '/'
 #define MASKALL      L"*"
 
-#define READBINARY   "r"
+#define READBINARY   "rb"
 #define READTEXT     "r"
-#define UPDATEBINARY "r+"
-#define CREATEBINARY "w+"
-#define WRITEBINARY  "w"
+#define UPDATEBINARY "r+b"
+#define CREATEBINARY "w+b"
+#define WRITEBINARY  "wb"
 #define APPENDTEXT   "a"
 
 #define _stdfunction 

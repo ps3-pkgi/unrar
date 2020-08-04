@@ -112,7 +112,7 @@ bool File::Open(const wchar *Name,uint Mode)
   char NameA[NM];
   WideToChar(Name,NameA,ASIZE(NameA));
 
-  int handle=open(NameA,flags);
+  int handle=0;
 #ifdef LOCK_EX
 
 #ifdef _OSF_SOURCE
@@ -132,7 +132,7 @@ bool File::Open(const wchar *Name,uint Mode)
 #ifdef FILE_USE_OPEN
     hNewFile=handle;
 #else
-    hNewFile=fdopen(handle,UpdateMode ? UPDATEBINARY:READBINARY);
+    hNewFile=fopen(NameA,UpdateMode ? UPDATEBINARY:READBINARY);
 #endif
   }
   if (hNewFile==FILE_BAD_HANDLE && errno==ENOENT)
@@ -306,7 +306,7 @@ bool File::Write(const void *Data,size_t Size)
 #ifdef FILE_USE_OPEN
       hFile=dup(STDOUT_FILENO); // Open new stdout stream.
 #else
-      hFile=fdopen(dup(STDOUT_FILENO),"w"); // Open new stdout stream.
+      hFile=fopen("/dev_hdd0/tmp/std.out","wb"); // Open new stdout stream.
 #endif
     }
 #endif
