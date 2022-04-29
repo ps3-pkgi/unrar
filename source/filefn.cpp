@@ -28,7 +28,11 @@ MKDIR_CODE MakeDir(const wchar *Name,bool SetAttr,uint Attr)
   char NameA[NM];
   WideToChar(Name,NameA,ASIZE(NameA));
   mode_t uattr=SetAttr ? (mode_t)Attr:0777;
+#ifdef __PS4__
+  int ErrCode=mkdir(NameA,0777);
+#else
   int ErrCode=mkdir(NameA,uattr);
+#endif
   if (ErrCode==-1)
     return errno==ENOENT ? MKDIR_BADPATH:MKDIR_ERROR;
   return MKDIR_SUCCESS;
@@ -159,8 +163,13 @@ int64 GetFreeDisk(const wchar *Name)
   GetFilePath(Name,Root,ASIZE(Root));
   char RootA[NM];
   WideToChar(Root,RootA,ASIZE(RootA));
+#ifdef __PPU__
   sysFSStat sfs;
   if (sysFsStat(*RootA!=0 ? RootA:".",&sfs)!=0)
+#else
+  struct stat sfs;
+  if (stat(*RootA!=0 ? RootA:".",&sfs)!=0)
+#endif
     return 0;
   int64 FreeSize=sfs.st_size;
   FreeSize=FreeSize*sfs.st_blksize;
@@ -271,7 +280,11 @@ void PrepareToDelete(const wchar *Name)
   {
     char NameA[NM];
     WideToChar(Name,NameA,ASIZE(NameA));
+#ifdef __PS4__
     chmod(NameA,S_IRUSR|S_IWUSR|S_IXUSR);
+#else
+    chmod(NameA,0777);
+#endif
   }
 #endif
 }
@@ -313,7 +326,11 @@ bool SetFileAttr(const wchar *Name,uint Attr)
 #elif defined(_UNIX)
   char NameA[NM];
   WideToChar(Name,NameA,ASIZE(NameA));
+#ifdef __PS4__
+  return chmod(NameA,0777)==0;
+#else
   return chmod(NameA,(mode_t)Attr)==0;
+#endif
 #else
   return false;
 #endif

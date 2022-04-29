@@ -146,7 +146,7 @@
   #include <sys/sysctl.h>
 #endif
 #ifndef SFX_MODULE
-    #include <lv2/sysfs.h>
+//    #include <lv2/sysfs.h>
 #endif
 #include <pwd.h>
 #include <grp.h>
