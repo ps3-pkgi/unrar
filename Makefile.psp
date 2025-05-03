@@ -6,7 +6,7 @@ OBJS       = source/rar.o source/strlist.o source/strfn.o source/pathfn.o source
 	source/list.o source/find.o source/unpack.o source/headers.o source/threadpool.o source/rs16.o source/cmddata.o source/ui.o \
 	source/filestr.o source/scantree.o source/dll.o source/qopen.o
 
-CFLAGS   = -Wl,-q -Wall -O3 -Wno-unused-variable -Wno-unused-but-set-variable -ffat-lto-objects -flto -DLITTLE_ENDIAN -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DRARDLL -D__PS4__ -DUTIME_NOW=0 -Iinclude
+CFLAGS   = -Wl,-q -Wall -O3 -Wno-unused-variable -Wno-unused-but-set-variable -ffat-lto-objects -flto -DLITTLE_ENDIAN -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DRARDLL -Iinclude
 CXXFLAGS = $(CFLAGS) -std=gnu++11 -fno-rtti
 
 INCDIR = include
